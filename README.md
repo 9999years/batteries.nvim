@@ -24,7 +24,6 @@ require("batteries").map {
   { "t", "<Cmd>Telescope<CR>", "Telescope" },
   -- Buffer local mapping:
   { "f", "<Cmd>Telescope find_files<CR>", "Find files", buffer = 3 },
-  { mode = "i", ",,", "<ESC>", 
 }
 ```
 
