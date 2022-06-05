@@ -1,0 +1,23 @@
+---
+name: Render documentation with vimhelp
+on:
+  push:
+    branches:
+      - main
+jobs:
+  vimhelp-render-html-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Render documentation with vimhelp
+        uses: 9999years/vimhelp@main
+        with:
+          doc_directory: doc/
+          output_directory: public/
+
+      - run: |
+          ls -la public/
