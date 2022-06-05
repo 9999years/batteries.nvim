@@ -1,7 +1,11 @@
 # batteries.nvim
 
-Ergonomic Neovim Lua bindings. See
-[`doc/batteries.txt`](doc/batteries.txt) for thorough documentation.
+Ergonomic Neovim Lua bindings.
+
+See `:h batteries` or [9999years.github.io/batteries.nvim][docs] for thorough
+documentation.
+
+[docs]: https://9999years.github.io/batteries.nvim/
 
 # batteries.map()
 
