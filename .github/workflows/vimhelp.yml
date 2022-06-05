@@ -20,4 +20,12 @@ jobs:
           output_directory: public/
 
       - run: |
-          ls -la public/
+          cp public/batteries.txt.html public/index.html
+          echo "Pages to deploy:"
+          ls -l public/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        with:
+          branch: gh-pages
+          folder: public/
