@@ -20,6 +20,7 @@ jobs:
           output_directory: public/
 
       - run: |
+          sudo chown -R $USER public/
           cp public/batteries.txt.html public/index.html
           echo "Pages to deploy:"
           ls -l public/
