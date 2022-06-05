@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Vim help pages, always up-to-date">
+<title>Vim: batteries.txt</title>
+<link rel="shortcut icon" href="favicon.ico">
+<!-- favicon is based on http://amnoid.de/tmp/vim_solidbright_512.png and is used with permission by its author -->
+<link rel="stylesheet" href="https://vimhelp.org/vimhelp.css" type="text/css">
+</head><body><p>
+Quick links:
+<a href="https://vimhelp.org/">help overview</a> &middot;
+<a href="https://vimhelp.org/quickref.txt.html">quick reference</a> &middot;
+<a href="https://vimhelp.org/usr_toc.txt.html">user manual toc</a> &middot;
+<a href="https://vimhelp.org/#reference_toc#reference_toc">reference manual toc</a> &middot;
+<a href="https://vimhelp.org/vim_faq.txt.html">faq</a>
+</p><pre><span id="batteries.txt" class="t">batteries.txt</span>                                Ergonomic <a href="https://vimhelp.org/intro.txt.html#Neovim" class="d">Neovim</a> <a href="https://vimhelp.org/if_lua.txt.html#Lua" class="d">Lua</a> bindings.
+
+                                      Type <span class="l">gO</span> to see the table of contents.
+
+<span class="h">=============================================================================</span>
+<span class="c">                                                           </span> <span id="batteries.nvim" class="t">batteries.nvim</span>
+
+The primary way to use <a href="#batteries.nvim" class="l">batteries.nvim</a> <a href="https://vimhelp.org/motion.txt.html#is" class="d">is</a> to <span class="l">lua-require</span> it: 
+<span class="e">    require("batteries")</span>
+
+The returned module (table) contains the following functions/fields:
+
+cmd({def})                                                 <span id="batteries.cmd%28%29" class="t">batteries.cmd()</span>
+
+    Define <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> command <a href="https://vimhelp.org/motion.txt.html#%28" class="d">(</a><a href="https://vimhelp.org/map.txt.html#user-commands" class="l">user-commands</a>). See <a href="https://vimhelp.org/map.txt.html#command-attributes" class="l">command-attributes</a> for the
+    arguments available here. Examples: 
+<span class="e">      require("batteries").cmd {</span>
+<span class="e">        range = true,</span>
+<span class="e">        nargs = 0,</span>
+<span class="e">        "Browse",</span>
+<span class="e">        "&lt;line1&gt;,&lt;line2&gt;OpenGithubFile",</span>
+<span class="e">      }</span>
+<span class="e"></span>
+<span class="e">      require("batteries").cmd {</span>
+<span class="e">        nargs = "?",</span>
+<span class="e">        complete = "filetype",</span>
+<span class="e">        "EditFtplugin",</span>
+<span class="e">        "call misc#EditFtplugin(&lt;f-args&gt;)",</span>
+<span class="e">      }</span>
+
+
+<span class="h">    Parameters: </span>
+        <span class="s">{def}</span>   table Command definition. Has the following keys:
+                • 1: (string) The command's name. For example, <span class="e">"Browse"</span> to
+                  define <span class="e">:Browse</span>.
+                • 2: (string) The replacement text. (See "Replacement text" in
+                  <a href="https://vimhelp.org/map.txt.html#map.txt" class="l">map.txt</a><a href="https://vimhelp.org/motion.txt.html#%29" class="d">)</a>
+
+                • nargs: (string|number) One of 0, 1, "*"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "<a href="https://vimhelp.org/pattern.txt.html#%3F" class="d">?</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> or "<a href="https://vimhelp.org/motion.txt.html#%2B" class="d">+</a>"<a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                  See <a href="https://vimhelp.org/map.txt.html#%3Acommand-nargs" class="l">:command-nargs</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • complete: (string) See <a href="https://vimhelp.org/map.txt.html#%3Acommand-complete" class="l">:command-complete</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • range: (string|number) One of <a href="https://vimhelp.org/vim9.txt.html#true" class="d">true</a> (`-range`), "<a href="https://vimhelp.org/motion.txt.html#%25" class="d">%</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> or <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a>
+                  number (`-range=N`). See <a href="https://vimhelp.org/map.txt.html#%3Acommand-range" class="l">:command-range</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • count: (number) See <a href="https://vimhelp.org/map.txt.html#%3Acommand-range" class="l">:command-range</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a> Mutually <a href="https://vimhelp.org/motion.txt.html#exclusive" class="d">exclusive</a>
+                  with <span class="e">range</span>.
+                • addr: (string) One of "lines"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "arguments"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "<a href="https://vimhelp.org/windows.txt.html#buffers" class="d">buffers</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a>
+                  "loaded_buffers"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "<a href="https://vimhelp.org/windows.txt.html#windows" class="d">windows</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "tabs"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "<a href="https://vimhelp.org/quickfix.txt.html#quickfix" class="d">quickfix</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> or "other"<a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                  See <a href="https://vimhelp.org/map.txt.html#%3Acommand-addr" class="l">:command-addr</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • bang: (boolean) Command can take <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> <a href="https://vimhelp.org/change.txt.html#%21" class="d">!</a> modifier.
+                  See <a href="https://vimhelp.org/map.txt.html#%3Acommand-bang" class="l">:command-bang</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • bar: (boolean) Command can be followed by <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> | and another
+                  command. See <a href="https://vimhelp.org/map.txt.html#%3Acommand-bar" class="l">:command-bar</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • register: (boolean) The first argument to the command can be
+                  <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> <a href="https://vimhelp.org/sponsor.txt.html#register" class="d">register</a> name. See <a href="https://vimhelp.org/map.txt.html#%3Acommand-register" class="l">:command-register</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • buffer: (boolean) Make the <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> buffer-local. See
+                  <a href="https://vimhelp.org/map.txt.html#%3Acommand-buffer" class="l">:command-buffer</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a> <span class="n">Note</span> that this can only be <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> boolean; <a href="https://vimhelp.org/insert.txt.html#I" class="d">I</a>
+                  have no clue how to make <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> command local to <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> particular
+                  buffer (rather than simply the current buffer).
+                • keepscript: (boolean) Use the invoked location for error
+                  messages. See <a href="https://vimhelp.org/map.txt.html#%3Acommand-keepscript" class="l">:command-keepscript</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+
+
+map({maps})                                                <span id="batteries.map%28%29" class="t">batteries.map()</span>
+
+    Define <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> key mapping; see <a href="https://vimhelp.org/map.txt.html#map.txt" class="l">map.txt</a> for an introduction. <a href="#batteries.map%28%29" class="l">batteries.map()</a>
+    supports several forms: 
+<span class="e">      -- :nnoremap &lt;silent&gt; &lt;Leader&gt;og &lt;Cmd&gt;Browse&lt;CR&gt;</span>
+<span class="e">      require("batteries").map {</span>
+<span class="e">        -- When I hit `\og`...</span>
+<span class="e">        "&lt;Leader&gt;og",</span>
+<span class="e">        -- Execute the `:Browse` command.</span>
+<span class="e">        "&lt;Cmd&gt;Browse&lt;CR&gt;",</span>
+<span class="e">        -- Set a description:</span>
+<span class="e">        "Open file on GitHub",</span>
+<span class="e">      }</span>
+<span class="e"></span>
+<span class="e">      -- Define multiple mappings with a common prefix together:</span>
+<span class="e">      require("batteries").map {</span>
+<span class="e">        prefix = "&lt;Leader&gt;",</span>
+<span class="e">        { "t", "&lt;Cmd&gt;Telescope&lt;CR&gt;", "Telescope" },</span>
+<span class="e">        -- Buffer local mapping:</span>
+<span class="e">        { "f", "&lt;Cmd&gt;Telescope find_files&lt;CR&gt;", "Find files", buffer = 3 },</span>
+<span class="e">        { mode = "i", ",,", "&lt;ESC&gt;", </span>
+<span class="e">      }</span>
+
+    Mostly, <a href="#batteries.map%28%29" class="l">batteries.map()</a> forwards to <span class="l">nvim_set_keymap()</span> and
+    <span class="l">nvim_buf_set_keymap()</span><a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> so see documentation for those <a href="https://vimhelp.org/eval.txt.html#functions" class="d">functions</a> and
+    <a href="https://vimhelp.org/map.txt.html#%3Amap-arguments" class="l">:map-arguments</a> for more
+    detail.
+
+    The following <a href="https://vimhelp.org/intro.txt.html#definitions" class="d">definitions</a> are all equivalent: 
+<span class="e">      require("batteries").map {</span>
+<span class="e">        prefix = "&lt;Leader&gt;f",</span>
+<span class="e">        name = "+file",</span>
+<span class="e">        { "f", "&lt;Cmd&gt;Telescope find_files&lt;CR&gt;", "Find file" },</span>
+<span class="e">        { "r", "&lt;Cmd&gt;Telescope oldfiles&lt;CR&gt;", "Open recent file" },</span>
+<span class="e">        { "n", "&lt;Cmd&gt;enew&lt;CR&gt;", "New file" },</span>
+<span class="e">      }</span>
+<span class="e"></span>
+<span class="e">      require("batteries").map {</span>
+<span class="e">        { prefix = "&lt;Leader&gt;f", name = "+file" },</span>
+<span class="e">        { "&lt;Leader&gt;ff", "&lt;Cmd&gt;Telescope find_files&lt;CR&gt;", "Find file" },</span>
+<span class="e">        { "&lt;Leader&gt;fr", "&lt;Cmd&gt;Telescope oldfiles&lt;CR&gt;", "Open recent file" },</span>
+<span class="e">        { "&lt;Leader&gt;fn", "&lt;Cmd&gt;enew&lt;CR&gt;", "New file" },</span>
+<span class="e">      }</span>
+
+<span class="h">    Parameters: </span>
+        <span class="s">{maps}</span>  table Mapping or mappings to define. <a href="https://vimhelp.org/insert.txt.html#A" class="d">A</a> <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> has the
+                following keys:
+                • 1: (string) Left-hand side <a href="https://vimhelp.org/map.txt.html#%7Blhs%7D" class="s">{lhs}</a> of the mapping.
+                • 2: (string|function) Right-hand side <a href="https://vimhelp.org/map.txt.html#%7Brhs%7D" class="s">{rhs}</a> of the mapping.
+                  If <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> function, used <a href="https://vimhelp.org/motion.txt.html#as" class="d">as</a> the <span class="e">callback</span> key for
+                  <span class="l">nvim_set_keymap()</span><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • 3: (string) If present, used <a href="https://vimhelp.org/motion.txt.html#as" class="d">as</a> the description of the
+                  binding.
+                • desc: (string) If present, used <a href="https://vimhelp.org/motion.txt.html#as" class="d">as</a> the description of the
+                  binding.
+
+                • prefix: (string) Prefix to the <a href="https://vimhelp.org/map.txt.html#%7Blhs%7D" class="s">{lhs}</a> of the mapping; mostly
+                  useful when defining multiple mappings <a href="https://vimhelp.org/motion.txt.html#at" class="d">at</a> once.
+                • mode: (string|table) Mode or <a href="https://vimhelp.org/eval.txt.html#list" class="d">list</a> of modes to define the
+                  <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> in, defaults to <span class="e">"n"</span> if not given.
+                • buffer: (number) Buffer number to define the <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> in, or
+                  leave blank for <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> global mapping.
+                • expr: (boolean) If true, sets <a href="https://vimhelp.org/map.txt.html#%3Amap-%3Cexpr%3E" class="l">:map-&lt;expr&gt;</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • nowait: (boolean) If true, sets <a href="https://vimhelp.org/map.txt.html#%3Amap-%3Cnowait%3E" class="l">:map-&lt;nowait&gt;</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • noremap: (boolean) If true, the <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> <a href="https://vimhelp.org/motion.txt.html#is" class="d">is</a> non-recursive
+                  (see <a href="https://vimhelp.org/map.txt.html#recursive_mapping" class="l">recursive_mapping</a>). Opposite of <span class="e">remap</span>. If the <a href="https://vimhelp.org/map.txt.html#%7Brhs%7D" class="s">{rhs}</a>
+                  starts with <span class="e">&lt;Plug&gt;</span>, this defaults to false.
+                • remap: (boolean) If true, the <a href="https://vimhelp.org/map.txt.html#mapping" class="d">mapping</a> <a href="https://vimhelp.org/motion.txt.html#is" class="d">is</a> recursive.
+                • script: (boolean) If true, sets <a href="https://vimhelp.org/map.txt.html#%3Amap-%3Cscript%3E" class="l">:map-&lt;script&gt;</a>
+                • silent: (boolean) Default true. If true, sets
+                  <a href="https://vimhelp.org/map.txt.html#%3Amap-%3Csilent%3E" class="l">:map-&lt;silent&gt;</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+                • unique: (boolean) If true, sets <a href="https://vimhelp.org/map.txt.html#%3Amap-%3Cunique%3E" class="l">:map-&lt;unique&gt;</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
+
+                • name: (string) If set, <a href="https://vimhelp.org/change.txt.html#registers" class="d">registers</a> the <span class="e">prefix</span> key with the
+                  given name <a href="https://vimhelp.org/motion.txt.html#as" class="d">as</a> <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> <span class="l">which-key.nvim</span> prefix.
+                  See: <a class="u" href="https://github.com/folke/which-key.nvim">https://github.com/folke/which-key.nvim</a>
+
+                If multiple mappings are specified, any of the above keys can
+                be specified <a href="https://vimhelp.org/motion.txt.html#at" class="d">at</a> any level and overridden in nested mappings;
+                prefixes are concatenated.
+
+tbl_pick({t}, <span class="s">{keys}</span>)                                   <span id="batteries.tbl_pick%28%29" class="t">batteries.tbl_pick()</span>
+
+    Pick out <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> subset of keys from <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> table. Example: 
+<span class="e">        require("batteries").tbl_pick(</span>
+<span class="e">            { hot = "dog", ham = "burger" },</span>
+<span class="e">            { "hot" }</span>
+<span class="e">        )</span>
+<span class="e">        -- { hot = "dog" }</span>
+
+    <span class="n">Note</span> that the keys to pick out can be integers for <a href="https://vimhelp.org/eval.txt.html#list" class="d">list</a> indexing!
+
+<span class="h">    Parameters: </span>
+        <span class="s">{t}</span>     table Input table to pick keys from.
+        <span class="s">{keys}</span>  table <a href="https://vimhelp.org/insert.txt.html#A" class="d">A</a> list-like table of keys to include in the returned
+                table.
+
+<span class="h">    Returns: </span>
+        <a href="https://vimhelp.org/insert.txt.html#A" class="d">A</a> new table (with no metatable) including only the keys in <span class="s">{keys}</span>.
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
+
+</pre><p>
+Quick links:
+<a href="https://vimhelp.org/">help overview</a> &middot;
+<a href="https://vimhelp.org/quickref.txt.html">quick reference</a> &middot;
+<a href="https://vimhelp.org/usr_toc.txt.html">user manual toc</a> &middot;
+<a href="https://vimhelp.org/#reference_toc#reference_toc">reference manual toc</a> &middot;
+<a href="https://vimhelp.org/vim_faq.txt.html">faq</a>
+</p>
+<footer>This rendered HTML documentation is generated using Carlo Teubner’s <a href="https://github.com/c4rlo/vimhelp">vimhelp</a> tool.</footer>
+</body>
+</html>
