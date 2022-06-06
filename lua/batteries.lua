@@ -17,6 +17,8 @@ function M.tbl_pick(t, keys)
 end
 
 -- `:h batteries.cmd()`
+-- TODO: Implement this with `vim.api.nvim_create_user_command` instead of
+-- string concatenation / `vim.cmd`.
 function M.cmd(opts)
   local def = "command! "
   if opts.nargs then
