@@ -16,47 +16,46 @@ function M.tbl_pick(t, keys)
   return ret
 end
 
+CMD_OPTS = {
+  "nargs",
+  "complete",
+  "range",
+  "count",
+  "addr",
+  "bang",
+  "bar",
+  "register",
+  "buffer",
+  "keepscript",
+  "force",
+  "desc",
+}
+
+function cmd_one(opts)
+  name = opts[1]
+  replacement = opts[2]
+  local cmd_opts = M.tbl_pick(opts, CMD_OPTS)
+  cmd_opts.desc = opts[3] or opts.desc
+  vim.api.nvim_create_user_command(name, replacement, cmd_opts)
+end
+
 -- `:h batteries.cmd()`
--- TODO: Implement this with `vim.api.nvim_create_user_command` instead of
--- string concatenation / `vim.cmd`.
-function M.cmd(opts)
-  local def = "command! "
-  if opts.nargs then
-    def = def .. "-nargs=" .. opts.nargs .. " "
-  end
-  if opts.complete then
-    def = def .. "-complete=" .. opts.complete .. " "
-  end
-  if opts.range then
-    if opts.range == true then
-      def = def .. "-range "
-    else
-      def = def .. "-range=" .. opts.range .. " "
+function M.cmd(cmds)
+  if type(cmds[1]) == "string" then
+    -- `cmds[1]` is a name; pass to `cmd_one`.
+    cmd_one(cmds)
+  else
+    -- `cmds[1]` is a table; merge top-level `cmds` attrs into each element
+    -- before recursing.
+    for _, cmd in ipairs(cmds) do
+      local resolved_cmd = vim.tbl_extend(
+        "keep", -- leftmost
+        cmd,
+        M.tbl_pick(cmds, CMD_OPTS)
+      )
+      M.cmd(resolved_cmd)
     end
   end
-  if opts.count then
-    def = def .. "-count=" .. opts.count .. " "
-  end
-  if opts.addr then
-    def = def .. "-addr=" .. opts.addr .. " "
-  end
-  if opts.bang then
-    def = def .. "-bang "
-  end
-  if opts.bar then
-    def = def .. "-bar "
-  end
-  if opts.register then
-    def = def .. "-register "
-  end
-  if opts.buffer then
-    def = def .. "-buffer "
-  end
-  if opts.keepscript then
-    def = def .. "-keepscript "
-  end
-  def = def .. opts[1] .. " " .. opts[2]
-  vim.cmd(def)
 end
 
 function map_inner(buffer, mode, lhs, rhs, opts)
@@ -100,19 +99,18 @@ function map_one(opts)
   local prefix = opts.prefix or ""
   local lhs = prefix .. opts[1]
   local rhs = opts[2]
-  local desc = opts[3] or opts.desc
   local mode = opts.mode or "n"
-  local set_opts = {
-    desc = desc,
-    expr = opts.expr,
-    nowait = opts.nowait,
-    noremap = opts.noremap,
-    remap = opts.remap,
-    replace_keycodes = opts.replace_keycodes,
-    script = opts.script,
-    silent = opts.silent,
-    unique = opts.unique,
-  }
+  local set_opts = M.tbl_pick(opts, {
+    "expr",
+    "nowait",
+    "noremap",
+    "remap",
+    "replace_keycodes",
+    "script",
+    "silent",
+    "unique",
+  })
+  set_opts.desc = opts[3] or opts.desc
 
   if set_opts.silent == nil then
     set_opts.silent = true
