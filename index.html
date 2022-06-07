@@ -29,13 +29,14 @@ The returned module (table) contains the following functions/fields:
 
 cmd({def})                                                 <span id="batteries.cmd%28%29" class="t">batteries.cmd()</span>
 
-    Define <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> command <a href="https://vimhelp.org/motion.txt.html#%28" class="d">(</a><a href="https://vimhelp.org/map.txt.html#user-commands" class="l">user-commands</a>). See <a href="https://vimhelp.org/map.txt.html#command-attributes" class="l">command-attributes</a> for the
-    arguments available here. Examples: 
+    Define <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> command <a href="https://vimhelp.org/motion.txt.html#%28" class="d">(</a><a href="https://vimhelp.org/map.txt.html#user-commands" class="l">user-commands</a>). See <span class="l">nvim_create_user_command()</span> and
+    <a href="https://vimhelp.org/map.txt.html#command-attributes" class="l">command-attributes</a> for the arguments available here. Examples: 
 <span class="e">      require("batteries").cmd {</span>
 <span class="e">        range = true,</span>
 <span class="e">        nargs = 0,</span>
 <span class="e">        "Browse",</span>
 <span class="e">        "&lt;line1&gt;,&lt;line2&gt;OpenGithubFile",</span>
+<span class="e">        "Browse file on GitHub", -- Description</span>
 <span class="e">      }</span>
 <span class="e"></span>
 <span class="e">      require("batteries").cmd {</span>
@@ -50,9 +51,13 @@ cmd({def})                                                 <span id="batteries.c
         <span class="s">{def}</span>   table Command definition. Has the following keys:
                 • 1: (string) The command's name. For example, <span class="e">"Browse"</span> to
                   define <span class="e">:Browse</span>.
-                • 2: (string) The replacement text. (See "Replacement text" in
-                  <a href="https://vimhelp.org/map.txt.html#map.txt" class="l">map.txt</a><a href="https://vimhelp.org/motion.txt.html#%29" class="d">)</a>
+                • 2: (string|function) The replacement text. (See "Replacement
+                  text" in <a href="https://vimhelp.org/map.txt.html#map.txt" class="l">map.txt</a>.) If <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> function, see
+                  <span class="l">nvim_create_user_command()</span> for <a href="https://vimhelp.org/insert.txt.html#a" class="d">a</a> description of the table
+                  passed <a href="https://vimhelp.org/motion.txt.html#as" class="d">as</a> an argument.
+                • 3: (string) Description of the command, if given.
 
+                • desc: (string) Description of the command.
                 • nargs: (string|number) One of 0, 1, "*"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> "<a href="https://vimhelp.org/pattern.txt.html#%3F" class="d">?</a>"<a href="https://vimhelp.org/motion.txt.html#%2C" class="d">,</a> or "<a href="https://vimhelp.org/motion.txt.html#%2B" class="d">+</a>"<a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
                   See <a href="https://vimhelp.org/map.txt.html#%3Acommand-nargs" class="l">:command-nargs</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
                 • complete: (string) See <a href="https://vimhelp.org/map.txt.html#%3Acommand-complete" class="l">:command-complete</a><a href="https://vimhelp.org/repeat.txt.html#." class="d">.</a>
@@ -177,7 +182,7 @@ tbl_pick({t}, <span class="s">{keys}</span>)                                   <
 <span class="h">    Returns: </span>
         <a href="https://vimhelp.org/insert.txt.html#A" class="d">A</a> new table (with no metatable) including only the keys in <span class="s">{keys}</span>.
 
- vim:tw=78:ts=8:noet:ft=help:norl:
+ vim:tw=78:ts=8:et:ft=help:norl:
 
 </pre><p>
 Quick links:
