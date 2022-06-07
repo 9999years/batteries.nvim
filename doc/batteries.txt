@@ -10,15 +10,16 @@ The primary way to use |batteries.nvim| is to |lua-require| it: >
 <
 The returned module (table) contains the following functions/fields:
 
-cmd({def})			                           *batteries.cmd()*
+cmd({def})                                                 *batteries.cmd()*
 
-    Define a command (|user-commands|). See |command-attributes| for the
-    arguments available here. Examples: >
+    Define a command (|user-commands|). See |nvim_create_user_command()| and
+    |command-attributes| for the arguments available here. Examples: >
       require("batteries").cmd {
         range = true,
         nargs = 0,
         "Browse",
         "<line1>,<line2>OpenGithubFile",
+        "Browse file on GitHub", -- Description
       }
 
       require("batteries").cmd {
@@ -33,9 +34,13 @@ cmd({def})			                           *batteries.cmd()*
         {def}   table Command definition. Has the following keys:
                 • 1: (string) The command's name. For example, `"Browse"` to
                   define `:Browse`.
-                • 2: (string) The replacement text. (See "Replacement text" in
-                  |map.txt|)
+                • 2: (string|function) The replacement text. (See "Replacement
+                  text" in |map.txt|.) If a function, see
+                  |nvim_create_user_command()| for a description of the table
+                  passed as an argument.
+                • 3: (string) Description of the command, if given.
 
+                • desc: (string) Description of the command.
                 • nargs: (string|number) One of 0, 1, "*", "?", or "+".
                   See |:command-nargs|.
                 • complete: (string) See |:command-complete|.
@@ -60,7 +65,7 @@ cmd({def})			                           *batteries.cmd()*
                   messages. See |:command-keepscript|.
 
 
-map({maps})					           *batteries.map()*
+map({maps})                                                *batteries.map()*
 
     Define a key mapping; see |map.txt| for an introduction. |batteries.map()|
     supports several forms: >
@@ -68,9 +73,9 @@ map({maps})					           *batteries.map()*
       require("batteries").map {
         -- When I hit `\og`...
         "<Leader>og",
-	-- Execute the `:Browse` command.
+        -- Execute the `:Browse` command.
         "<Cmd>Browse<CR>",
-	-- Set a description:
+        -- Set a description:
         "Open file on GitHub",
       }
 
@@ -78,9 +83,9 @@ map({maps})					           *batteries.map()*
       require("batteries").map {
         prefix = "<Leader>",
         { "t", "<Cmd>Telescope<CR>", "Telescope" },
-	-- Buffer local mapping:
+        -- Buffer local mapping:
         { "f", "<Cmd>Telescope find_files<CR>", "Find files", buffer = 3 },
-	{ mode = "i", ",,", "<ESC>", 
+        { mode = "i", ",,", "<ESC>", 
       }
 <
     Mostly, |batteries.map()| forwards to |nvim_set_keymap()| and
@@ -90,56 +95,56 @@ map({maps})					           *batteries.map()*
 
     The following definitions are all equivalent: >
       require("batteries").map {
-	prefix = "<Leader>f",
-	name = "+file",
-	{ "f", "<Cmd>Telescope find_files<CR>", "Find file" },
-	{ "r", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
-	{ "n", "<Cmd>enew<CR>", "New file" },
+        prefix = "<Leader>f",
+        name = "+file",
+        { "f", "<Cmd>Telescope find_files<CR>", "Find file" },
+        { "r", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
+        { "n", "<Cmd>enew<CR>", "New file" },
       }
 
       require("batteries").map {
-	{ prefix = "<Leader>f", name = "+file" },
-	{ "<Leader>ff", "<Cmd>Telescope find_files<CR>", "Find file" },
-	{ "<Leader>fr", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
-	{ "<Leader>fn", "<Cmd>enew<CR>", "New file" },
+        { prefix = "<Leader>f", name = "+file" },
+        { "<Leader>ff", "<Cmd>Telescope find_files<CR>", "Find file" },
+        { "<Leader>fr", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
+        { "<Leader>fn", "<Cmd>enew<CR>", "New file" },
       }
 <
     Parameters: ~
-	{maps}	table Mapping or mappings to define. A mapping has the
-		following keys:
-		• 1: (string) Left-hand side {lhs} of the mapping.
-		• 2: (string|function) Right-hand side {rhs} of the mapping.
-		  If a function, used as the `callback` key for
-		  |nvim_set_keymap()|.
-		• 3: (string) If present, used as the description of the
-		  binding.
-		• desc: (string) If present, used as the description of the
-		  binding.
+        {maps}  table Mapping or mappings to define. A mapping has the
+                following keys:
+                • 1: (string) Left-hand side {lhs} of the mapping.
+                • 2: (string|function) Right-hand side {rhs} of the mapping.
+                  If a function, used as the `callback` key for
+                  |nvim_set_keymap()|.
+                • 3: (string) If present, used as the description of the
+                  binding.
+                • desc: (string) If present, used as the description of the
+                  binding.
 
-		• prefix: (string) Prefix to the {lhs} of the mapping; mostly
-		  useful when defining multiple mappings at once.
-		• mode: (string|table) Mode or list of modes to define the
-		  mapping in, defaults to `"n"` if not given.
-		• buffer: (number) Buffer number to define the mapping in, or
-		  leave blank for a global mapping.
-		• expr: (boolean) If true, sets |:map-<expr>|.
-		• nowait: (boolean) If true, sets |:map-<nowait>|.
-		• noremap: (boolean) If true, the mapping is non-recursive
-		  (see |recursive_mapping|). Opposite of `remap`. If the {rhs}
-		  starts with `<Plug>`, this defaults to false.
-		• remap: (boolean) If true, the mapping is recursive.
-		• script: (boolean) If true, sets |:map-<script>|
-		• silent: (boolean) Default true. If true, sets
-		  |:map-<silent>|.
-		• unique: (boolean) If true, sets |:map-<unique>|.
+                • prefix: (string) Prefix to the {lhs} of the mapping; mostly
+                  useful when defining multiple mappings at once.
+                • mode: (string|table) Mode or list of modes to define the
+                  mapping in, defaults to `"n"` if not given.
+                • buffer: (number) Buffer number to define the mapping in, or
+                  leave blank for a global mapping.
+                • expr: (boolean) If true, sets |:map-<expr>|.
+                • nowait: (boolean) If true, sets |:map-<nowait>|.
+                • noremap: (boolean) If true, the mapping is non-recursive
+                  (see |recursive_mapping|). Opposite of `remap`. If the {rhs}
+                  starts with `<Plug>`, this defaults to false.
+                • remap: (boolean) If true, the mapping is recursive.
+                • script: (boolean) If true, sets |:map-<script>|
+                • silent: (boolean) Default true. If true, sets
+                  |:map-<silent>|.
+                • unique: (boolean) If true, sets |:map-<unique>|.
 
-		• name: (string) If set, registers the `prefix` key with the
-		  given name as a |which-key.nvim| prefix.
-		  See: https://github.com/folke/which-key.nvim
+                • name: (string) If set, registers the `prefix` key with the
+                  given name as a |which-key.nvim| prefix.
+                  See: https://github.com/folke/which-key.nvim
 
-		If multiple mappings are specified, any of the above keys can
-		be specified at any level and overridden in nested mappings;
-		prefixes are concatenated.
+                If multiple mappings are specified, any of the above keys can
+                be specified at any level and overridden in nested mappings;
+                prefixes are concatenated.
 
 tbl_pick({t}, {keys})                                   *batteries.tbl_pick()*
 
@@ -160,4 +165,4 @@ tbl_pick({t}, {keys})                                   *batteries.tbl_pick()*
     Returns: ~
         A new table (with no metatable) including only the keys in {keys}.
 
- vim:tw=78:ts=8:noet:ft=help:norl:
+ vim:tw=78:ts=8:et:ft=help:norl:
