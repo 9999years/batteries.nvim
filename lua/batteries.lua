@@ -121,6 +121,14 @@ function map_one(opts)
     rhs = ""
   end
 
+  if rhs == nil then
+    vim.notify(
+      "`batteries.map` was called with a nil right-hand side for mapping " .. vim.inspect(lhs),
+      vim.log.levels.ERROR
+    )
+    return
+  end
+
   if set_opts.noremap == nil and set_opts.remap == nil then
     set_opts.noremap = not vim.startswith(rhs, "<Plug>")
   end
