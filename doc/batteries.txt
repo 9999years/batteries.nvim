@@ -96,14 +96,14 @@ map({maps})                                                *batteries.map()*
     The following definitions are all equivalent: >
       require("batteries").map {
         prefix = "<Leader>f",
-        name = "+file",
+        group = "file",
         { "f", "<Cmd>Telescope find_files<CR>", "Find file" },
         { "r", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
         { "n", "<Cmd>enew<CR>", "New file" },
       }
 
       require("batteries").map {
-        { prefix = "<Leader>f", name = "+file" },
+        { prefix = "<Leader>f", group = "file" },
         { "<Leader>ff", "<Cmd>Telescope find_files<CR>", "Find file" },
         { "<Leader>fr", "<Cmd>Telescope oldfiles<CR>", "Open recent file" },
         { "<Leader>fn", "<Cmd>enew<CR>", "New file" },
@@ -138,7 +138,7 @@ map({maps})                                                *batteries.map()*
                   |:map-<silent>|.
                 • unique: (boolean) If true, sets |:map-<unique>|.
 
-                • name: (string) If set, registers the `prefix` key with the
+                • group: (string) If set, registers the `prefix` key with the
                   given name as a |which-key.nvim| prefix.
                   See: https://github.com/folke/which-key.nvim
 

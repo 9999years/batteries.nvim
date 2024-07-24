@@ -31,9 +31,9 @@ CMD_OPTS = {
   "desc",
 }
 
-function cmd_one(opts)
-  name = opts[1]
-  replacement = opts[2]
+local function cmd_one(opts)
+  local name = opts[1]
+  local replacement = opts[2]
   local cmd_opts = M.tbl_pick(opts, CMD_OPTS)
   cmd_opts.desc = opts[3] or opts.desc
   vim.api.nvim_create_user_command(name, replacement, cmd_opts)
@@ -58,8 +58,8 @@ function M.cmd(cmds)
   end
 end
 
-function map_inner(buffer, mode, lhs, rhs, opts)
-  function map_maybe_buffer(buffer, mode, lhs, rhs, opts)
+local function map_inner(buffer, mode, lhs, rhs, opts)
+  local function map_maybe_buffer(buffer, mode, lhs, rhs, opts)
     if buffer then
       if M.debug then
         print(
@@ -95,7 +95,7 @@ function map_inner(buffer, mode, lhs, rhs, opts)
   end
 end
 
-function map_one(opts)
+local function map_one(opts)
   local prefix = opts.prefix or ""
   local lhs = prefix .. opts[1]
   local rhs = opts[2]
@@ -138,11 +138,11 @@ end
 
 -- `:h batteries.map()`
 function M.map(mappings)
-  if mappings.name ~= nil then
+  if mappings.group ~= nil then
     -- Set the name for this prefix with `which-key`.
     -- See: https://github.com/folke/which-key.nvim
-    require("which-key").register {
-      [mappings.prefix] = { name = mappings.name },
+    require("which-key").add {
+      { mappings.prefix, group = mappings.group },
     }
   end
 
