@@ -138,11 +138,11 @@ end
 
 -- `:h batteries.map()`
 function M.map(mappings)
-  if mappings.name ~= nil then
+  if mappings.group ~= nil then
     -- Set the name for this prefix with `which-key`.
     -- See: https://github.com/folke/which-key.nvim
-    require("which-key").register {
-      [mappings.prefix] = { name = mappings.name },
+    require("which-key").add {
+      { mappings.prefix, group = mappings.group },
     }
   end
 
